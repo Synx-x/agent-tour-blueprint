@@ -1,0 +1,53 @@
+# Illustrative shape only. Replace every field with validated host-system data.
+id: first-safe-workflow
+title: Complete a sample task
+audience: first-time user
+fixture_requirements:
+  - synthetic-demo-record-exists
+steps:
+  - id: welcome
+    title: Start in the demo workspace
+    narration: This tour uses a disposable demo workspace, not your account data.
+    destination: null
+    target: null
+    action: null
+    success_check: demo-banner-visible
+    timeout_seconds: 5
+    recovery: Exit the tour if the demo banner is missing.
+
+  - id: inspect-record
+    title: Find the sample record
+    narration: Use the product's normal navigation to open the sample record.
+    destination: records
+    target: tour.record.search
+    action:
+      kind: visible-ui
+      operation: open-synthetic-demo-record
+    success_check: selected-record-id-equals-fixture-id
+    timeout_seconds: 15
+    recovery: Offer retry or skip; never substitute a real user's record.
+
+  - id: make-reversible-change
+    title: Change one safe field
+    narration: This demo change is scoped to the disposable workspace and can be undone.
+    destination: records
+    target: tour.record.edit
+    action:
+      kind: visible-ui
+      operation: update-demo-field
+    success_check: demo-record-field-matches-example-value
+    undo_change_id: capture-exact-tour-change-id
+    timeout_seconds: 15
+    recovery: Verify the fixture state before retrying; otherwise offer exit.
+
+  - id: undo-demo-change
+    title: Undo the tour's change
+    narration: Undo only the change made in this tour.
+    destination: activity
+    target: tour.activity.undo-exact-change
+    action:
+      kind: visible-ui
+      operation: undo-captured-tour-change-id
+    success_check: demo-record-matches-pre-tour-snapshot
+    timeout_seconds: 15
+    recovery: If undo fails, disclose it and provide the product's safe manual recovery path.
