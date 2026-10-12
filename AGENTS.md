@@ -53,6 +53,8 @@ closed -> choosing -> preparing -> running -> finishing -> closed
 
 Keep state minimal: active scenario, step index, disposable context id, busy flag, result/error, and any exact change id required for undo. Clamp Back/Next to the valid range. Disable conflicting controls while an action runs. Make start and cleanup idempotent. Ignore or cancel late async results after exit.
 
+A write step runs once per tour run. After its action succeeds, disable "Show me" for that step. Offer it again only after a failure. A second press repeats the write, for example as a duplicate record. Replay resets this, because replay starts from a clean baseline.
+
 Every wait/action must have a finite timeout. Prefer events, pending flags, or visible/state postconditions over long fixed sleeps. A failed postcondition must leave the user on the step with a plain-language explanation and retry/skip/exit options.
 
 ### 5. Build the tour UI
@@ -61,7 +63,11 @@ Every wait/action must have a finite timeout. Prefer events, pending flags, or v
 - Keep a visible demo/sandbox banner and exit control while the tour is active.
 - Provide Back, Next, Skip/Exit, Replay/Restart, progress, and visible action results.
 - Navigate to real screens. Use stable semantic anchors (accessible names or explicit test/tour attributes), not generated CSS classes or positional selectors.
+- When one anchor matches more than one element, pick the copy the user can see. A screen can render a module twice, for example in a main view and in a tile over it. Hit-test the centre of each laid-out match and take the one on top. Never take the first match.
+- Scope row actions with a row attribute that holds the entity id, for example `[data-row="<id>"] [data-tour="activity.undo"]`. An unscoped target finds the wrong row.
 - Recompute spotlight targets after navigation/layout changes. Clear the previous spotlight when a target is missing, hidden, occluded, or offscreen. Never leave a stale ring.
+- While a step's action runs, the spotlight frames the control the cursor works on (section 6). After the action, it frames the step's section or the result.
+- Give every overlay (spotlight, dim mask, cursor) `pointer-events: none` or the host equivalent. An overlay that takes pointer events blocks the real click and breaks the hit-test.
 - Respect keyboard navigation, focus management, Escape, contrast, reduced-motion preference, and touch targets. Return focus sensibly on close.
 - Keep narration concise and grounded in the selected fixture. Describe empty, zero, stale, or unavailable values accurately.
 
@@ -69,7 +75,35 @@ Every wait/action must have a finite timeout. Prefer events, pending flags, or v
 
 Prefer operating the same visible controls a person uses: open the form, fill/select values, submit, then verify the result. This tests both the tour and the product UI.
 
+The user must see the action happen. A "Show me" step that calls `.click()` with nothing on screen, or writes through an API, teaches nothing. It also hides a broken step behind a passing postcondition. Drive every visible-UI action with an on-screen cursor, as below.
+
+#### Drive the UI with a visible cursor
+
+Build three pieces, and keep each one free of product knowledge.
+
+1. **Drive scripts, as data.** A script names the screen or panel to bring forward and a list of drive steps. Each drive step has an operation (`click`, `fill` or `select`), a semantic target, an optional row id, an optional value and a short caption. Build the values from the same validated input a direct write would send. Keep scripts beside the scenarios, not in UI code.
+2. **A drive engine that runs scripts.** For each drive step, the engine does five things in order:
+   - Find the target. Poll with a bounded wait, about 3.5 s. Use the visible-copy and row-scope rules from section 5.
+   - Scroll the target into view and let it settle.
+   - Move the cursor onto the target, and publish the target's box as the cursor focus.
+   - Do the operation through the product's own input path (see below).
+   - Pause briefly, so the user sees the result before the next step.
+   The host supplies one hook, `stage(panel)`, that brings a screen or panel forward. The engine never imports product modules. If an in-product assistant also changes data, let it use the same engine and scripts.
+3. **A cursor state and a presentational cursor.** Keep the cursor state in a small store with no app imports: position, visible, caption, running, mode (`move`, `type` or `click`), a press counter and the focus box. Only the engine writes this store. Render the cursor in the top layer, fixed and `aria-hidden`, with `pointer-events: none`. Let it ease or spring between positions. Show a press ripple on each click and a typing indicator while it types. Announce progress through the step card's live region, not through the cursor.
+
+Type and select through the product's input path, so the form's own handlers run. Setting an input's `.value` property directly skips framework change handlers, and the form then submits stale state. In React, for example, call the native value setter and then dispatch a bubbling `input` event (`change` for a select). Type one character at a time, and cap the total typing time. Enter dates and other masked values whole. The final press makes the write through the product's own handler.
+
+Use these starting values for the pace, then tune them: move 600 ms, settle 200 ms, 30 ms per character up to 900 ms per field, press 250 ms, and 400 ms after each drive step. Under reduced motion, keep every drive step and set every wait to zero. The cursor then jumps instead of gliding.
+
+After the write lands, ring the changed row or record for about one second, so the user's eye lands on the result. Hide the cursor when the step ends, on every path. Clear its focus box so the spotlight returns to the step's section.
+
+#### Fall back to a direct adapter only on a typed miss
+
 Use a direct domain/API adapter only when visible operation is unreliable or impossible (for example, a control unavailable at a narrow viewport). Keep the fallback explicit, use normal authorization and validation, and check the same postcondition. Never create a tour-only bypass around business rules.
+
+Make the engine throw a distinct error type when a control is not on screen. Catch only that type. Before the direct write, close any form the script left half-filled. Then make the write, and record which path ran (`screen` or `direct`) for each step. Rethrow every other error.
+
+#### Read every write back, on either path
 
 For each write, read the resulting state back from the disposable context. If the host has an audit/change-set mechanism, mark the actor as `tour`/`demo` and retain the exact identifier. A later undo step must target that identifier only. Never undo “the latest” change or an unrelated row.
 
@@ -78,7 +112,7 @@ For each write, read the resulting state back from the disposable context. If th
 On completion, skip, close, failure, route change, and unmount:
 
 - stop pending tour work or make late results harmless;
-- remove overlays, spotlight, cursor guidance, and tour-only keyboard handlers;
+- remove overlays, spotlight, the drive cursor, and tour-only keyboard handlers;
 - discard/retain only the disposable fixture according to the completed spec;
 - restore the user's prior profile, route, and relevant UI context;
 - verify that user data and external systems remain unchanged.
@@ -98,6 +132,8 @@ Use the host project's existing test stack. Unit tests alone do not prove the li
 - Tour change is undone by its exact id and data returns to baseline.
 - Reset/cleanup rejects ordinary user/account identifiers.
 - External-effect adapters are stubbed/disabled in tests.
+- Every drive script resolves: each target and row anchor exists, and each script's values match the direct write's input.
+- The engine raises its typed miss for an absent control, and the runner then takes the direct path.
 
 ### Integration and live journey
 
@@ -106,19 +142,20 @@ Run each scenario with a fresh disposable user/profile and verify:
 1. Entry/picker behavior in supported guest and signed-in states.
 2. Sandbox banner is visible and identifies demo mode.
 3. Every step is reachable; navigation and spotlight stay correct.
-4. “Show me” uses the real UI when feasible.
+4. “Show me” uses the real UI when feasible. Prove it: observe the DOM (or the host equivalent) during each visible-UI step and fail the step when the cursor never appears. Compare each step's recorded path (`screen` or `direct`) with the path the spec expects at that viewport.
 5. Success is confirmed from actual product state, not only a toast or narration.
 6. Undo reverses only the tour's own change.
 7. Replay returns to the declared baseline.
 8. Skip/exit restores the previous context and its before/after data snapshot matches.
 9. No real external integration receives a request.
 10. A missing target and a timed-out action fail visibly and recoverably.
+11. A completed write step cannot run a second time, and no cursor or spotlight remains after the tour ends.
 
 Run focused tests first, then all required host-repo gates. Run at least one real-browser journey if the product has a browser UI. Check the smallest supported viewport and reduced-motion mode where relevant. Save concise evidence (commands, environment, scenarios, pass/fail counts, and limits) without credentials or personal data.
 
 ## Handoff report
 
-Report where the tour starts, the isolation boundary and external-effect controls, scenarios covered, which actions used the visible UI versus an adapter, exact tests/results, known gaps, and how to start/replay/exit. Do not claim “fully verified” unless live journeys, data isolation, undo, replay, and exit were exercised.
+Report where the tour starts, the isolation boundary and external-effect controls, scenarios covered, which actions the cursor drove on screen versus through an adapter (per step and viewport), exact tests/results, known gaps, and how to start/replay/exit. Do not claim “fully verified” unless live journeys, data isolation, undo, replay, and exit were exercised.
 
 ## First instruction
 

@@ -23,6 +23,13 @@ steps:
     action:
       kind: visible-ui
       operation: open-synthetic-demo-record
+      # The cursor runs these on screen. Values come from the fixture, not UI code.
+      drive:
+        stage: records
+        steps:
+          - { do: fill, target: tour.record.search, value: "<fixture record name>", caption: Searching for the sample }
+          - { do: click, target: tour.record.open, row: "<fixture record id>", caption: Opening it }
+      fallback: none # read-only step: no direct path
     success_check: selected-record-id-equals-fixture-id
     timeout_seconds: 15
     recovery: Offer retry or skip; never substitute a real user's record.
@@ -35,6 +42,16 @@ steps:
     action:
       kind: visible-ui
       operation: update-demo-field
+      drive:
+        stage: records
+        steps:
+          - { do: click, target: tour.record.edit, row: "<fixture record id>", caption: Opening the editor }
+          - { do: fill, target: tour.record.status-note, value: "<example value>", caption: Typing the change }
+          - { do: click, target: tour.record.save, caption: Saving }
+      # Used only when the engine reports a control missing (for example at 320 px).
+      # Same validation, same postcondition. The runner records `screen` or `direct`.
+      fallback: direct-update-demo-field
+      once: true # disable Show me after success, re-offer only after a failure
     success_check: demo-record-field-matches-example-value
     undo_change_id: capture-exact-tour-change-id
     timeout_seconds: 15
@@ -48,6 +65,12 @@ steps:
     action:
       kind: visible-ui
       operation: undo-captured-tour-change-id
+      drive:
+        stage: activity
+        steps:
+          - { do: click, target: tour.activity.undo, row: "<captured change id>", caption: Undoing the tour's change }
+      fallback: direct-revert-captured-change-id
+      once: true
     success_check: demo-record-matches-pre-tour-snapshot
     timeout_seconds: 15
     recovery: If undo fails, disclose it and provide the product's safe manual recovery path.

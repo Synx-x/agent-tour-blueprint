@@ -17,6 +17,7 @@ No runtime or framework dependency is required. The blueprint instructs the agen
 - External side effects disabled during the tour.
 - Scenario-driven steps with explicit postconditions and bounded waits.
 - Real UI interaction where practical, with a verified safe fallback.
+- A visible cursor that drives each "Show me" step on screen from data scripts, and a live check that fails a step the user never saw.
 - Undo scoped to the tour's own change, replay from baseline, and safe exit.
 - Unit/contract and live journey checks, including a before/after data-isolation assertion.
 
@@ -29,7 +30,7 @@ No runtime or framework dependency is required. The blueprint instructs the agen
 
 ## Scope and origin
 
-This blueprint abstracts design lessons from Abacus's guided tour: a disposable persona sandbox, scenario data, real UI actions, explicit tour state, exact-change undo, replay, and live tests that verify the user's own data is unchanged. It contains no Abacus source code, financial fixtures, credentials, or product-specific selectors. It is a starting contract, not a drop-in tour library; the receiving agent must adapt it to the target system.
+This blueprint abstracts design lessons from Abacus's guided tour: a disposable persona sandbox, scenario data, real UI actions driven by an on-screen cursor, explicit tour state, exact-change undo, replay, and live tests that verify the user's own data is unchanged. It contains no Abacus source code, financial fixtures, credentials, or product-specific selectors. It is a starting contract, not a drop-in tour library; the receiving agent must adapt it to the target system.
 
 ## License
 

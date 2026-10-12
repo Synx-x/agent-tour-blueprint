@@ -52,6 +52,27 @@ For each journey, list the steps with stable ids, narration, destination, semant
 |---|---|---|---|---|---|
 | TODO | TODO | TODO | TODO | TODO | TODO |
 
+## Drive and cursor design
+
+Answer these before you build any visible-UI action. See `AGENTS.md` section 6.
+
+```yaml
+anchor_attribute: TODO # e.g. data-tour; one attribute for every driven control
+row_attribute: TODO # e.g. data-row holding the entity id; how row actions are scoped
+duplicate_renders: TODO # screens where one anchor matches twice; how the visible copy is picked
+stage_hook: TODO # how the host brings a screen/panel forward for the engine
+input_path: TODO # how a scripted value fires the framework's own change handlers
+cursor_layer: TODO # where the cursor mounts; confirm pointer-events none and aria-hidden
+pace_ms: { move: TODO, settle: TODO, per_char: TODO, max_type: TODO, press: TODO, after: TODO }
+reduced_motion: TODO # every step kept, every wait zero
+expected_path_by_viewport: TODO # per step: screen or direct at each supported viewport
+shared_with_assistant: TODO / N/A # does an in-product agent reuse the engine and scripts?
+```
+
+| Step ID | Drive steps (do, target, row, caption) | Fallback when a control is missing | Runs once? |
+|---|---|---|---|
+| TODO | TODO | TODO | TODO |
+
 ## Safety proof
 
 - How is a tour context distinguished from a real user context? TODO
@@ -60,6 +81,7 @@ For each journey, list the steps with stable ids, narration, destination, semant
 - What before/after snapshot proves the user's state is unchanged? TODO
 - How is exact-change undo scoped? TODO / N/A with reason
 - What cleanup runs on exit, unmount, and async failure? TODO
+- Which half-filled forms does the fallback close before a direct write? TODO
 
 ## Acceptance commands and evidence
 

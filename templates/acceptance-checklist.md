@@ -18,6 +18,20 @@
 - [ ] Failed actions show a plain, truthful message with retry/skip/exit.
 - [ ] Keyboard, focus, reduced motion, contrast, and small-screen behavior are checked.
 
+## Drive cursor
+
+- [ ] Every visible-UI action runs from a drive script (data), through one product-neutral engine.
+- [ ] The cursor appears and moves onto each control before the engine types or presses.
+- [ ] Typed values fire the product's own change handlers, and the form submits what the cursor typed.
+- [ ] Anchors that render twice resolve to the copy on top. Row actions are scoped by entity id.
+- [ ] Spotlight, mask and cursor ignore pointer events. The cursor is hidden from assistive tech.
+- [ ] While an action runs, the spotlight frames the control the cursor works on.
+- [ ] The changed row or record is ringed after the write lands.
+- [ ] Reduced motion keeps every step and drops every wait.
+- [ ] A missing control raises the typed miss. The fallback closes half-filled forms, then writes directly.
+- [ ] The live check fails a step when no cursor appears, and it records `screen` or `direct` per step.
+- [ ] A completed write step cannot run twice. No cursor or ring remains after exit.
+
 ## Verification and handoff
 
 - [ ] Scenario fixture requirements and semantic anchors validate before use.
