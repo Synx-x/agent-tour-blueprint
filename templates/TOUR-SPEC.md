@@ -79,6 +79,7 @@ pace_ms: { move: TODO, settle: TODO, per_char: TODO, max_type: TODO, press: TODO
 reduced_motion: TODO # every step kept, every wait zero
 expected_path_by_viewport: TODO # per step: screen or direct at each supported viewport
 shared_with_assistant: TODO / N/A # does an in-product agent reuse the engine and scripts?
+assistant_registry: TODO / N/A # where scripts are registered by write name; which writes need user confirmation
 ```
 
 | Step ID | Drive steps (do, target, row, caption) | Fallback when a control is missing | Runs once? |

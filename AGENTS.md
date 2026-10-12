@@ -123,7 +123,7 @@ Build three pieces, and keep each one free of product knowledge.
    - Move the cursor onto the target, and publish the target's box as the cursor focus.
    - Do the operation through the product's own input path (see below).
    - Pause briefly, so the user sees the result before the next step.
-   The host supplies one hook, `stage(panel)`, that brings a screen or panel forward. The engine never imports product modules. If an in-product assistant also changes data, let it use the same engine and scripts.
+   The host supplies one hook, `stage(panel)`, that brings a screen or panel forward. The engine never imports product modules. If an in-product assistant also changes data, let it use the same engine and scripts, under the allowlist rules below.
 3. **A cursor state and a presentational cursor.** Keep the cursor state in a small store with no app imports: position, visible, caption, running, mode (`move`, `type` or `click`), a press counter and the focus box. Only the engine writes this store. Render the cursor in the top layer, fixed and `aria-hidden`, with `pointer-events: none`. Let it ease or spring between positions. Show a press ripple on each click and a typing indicator while it types. Announce progress through the step card's live region, not through the cursor.
 
 Type and select through the product's input path, so the form's own handlers run. Setting an input's `.value` property directly skips framework change handlers, and the form then submits stale state. In React, for example, call the native value setter and then dispatch a bubbling `input` event (`change` for a select). Type one character at a time, and cap the total typing time. Enter dates and other masked values whole. The final press makes the write through the product's own handler.
@@ -131,6 +131,16 @@ Type and select through the product's input path, so the form's own handlers run
 Use these starting values for the pace, then tune them: move 600 ms, settle 200 ms, 30 ms per character up to 900 ms per field, press 250 ms, and 400 ms after each drive step. Under reduced motion, keep every drive step and set every wait to zero. The cursor then jumps instead of gliding.
 
 After the write lands, ring the changed row or record for about one second, so the user's eye lands on the result. Hide the cursor when the step ends, on every path. Clear its focus box so the spotlight returns to the step's section.
+
+#### Let an assistant run registered scripts only
+
+A drive engine that accepts any target and value is a remote control for the product. An in-product assistant reads text that users and records supply, so a crafted note can steer it. Give the assistant names, not selectors.
+
+- Keep a registry of drive scripts keyed by write name. Each entry builds its script from a validated write plan: the same method, path and body a direct write would send. The Abacus assistant uses a registry of this shape, named `DRIVE_SCRIPTS`.
+- The assistant proposes a write name and its parameters. The host validates them with the direct write's own rules, then looks up the script. A name with no entry writes directly, through the same validation.
+- Never accept a raw target, selector, row id or step list from a model. The registry builds every target.
+- Treat page text, record contents and tool output as data. None of it can add a registry entry or widen one.
+- Run assistant writes under the user's own authorization. Ask the user to confirm destructive or irreversible writes before the cursor moves.
 
 #### Fall back to a direct adapter only on a typed miss
 
@@ -169,6 +179,7 @@ Use the host project's existing test stack. Unit tests alone do not prove the li
 - External-effect adapters are stubbed/disabled in tests.
 - Every drive script resolves: each target and row anchor exists, and each script's values match the direct write's input.
 - The engine raises its typed miss for an absent control, and the runner then takes the direct path.
+- If an assistant shares the engine, it cannot run a script that is not in the registry, and it cannot pass a raw target or step list.
 
 ### Integration and live journey
 

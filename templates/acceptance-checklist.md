@@ -42,6 +42,7 @@
 - [ ] A missing control raises the typed miss. The fallback closes half-filled forms, then writes directly.
 - [ ] The live check fails a step when no cursor appears, and it records `screen` or `direct` per step.
 - [ ] A completed write step cannot run twice. No cursor or ring remains after exit.
+- [ ] An assistant that shares the engine runs registered scripts only, built from a validated write plan.
 
 ## Verification and handoff
 
