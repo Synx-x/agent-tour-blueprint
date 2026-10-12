@@ -237,7 +237,7 @@ Run focused tests first, then all required host-repo gates. Run at least one rea
 
 ## Handoff report
 
-Report where the tour starts, the isolation mode and boundary, any shared-estate leak and the purge control, the external-effect controls, scenarios covered, which actions the cursor drove on screen versus through an adapter (per step and viewport), exact tests/results, known gaps, and how to start/replay/exit. Do not claim “fully verified” unless live journeys, data isolation, undo, replay, and exit were exercised.
+Report the blueprint version you followed, where the tour starts, the isolation mode and boundary, any shared-estate leak and the purge control, the external-effect controls, scenarios covered, which actions the cursor drove on screen versus through an adapter (per step and viewport), exact tests/results, known gaps, and how to start/replay/exit. Do not claim “fully verified” unless live journeys, data isolation, undo, replay, and exit were exercised.
 
 ## First instruction
 

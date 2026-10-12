@@ -2,6 +2,8 @@
 
 The receiving agent completes this document before coding. Replace every `TODO`; mark non-applicable fields `N/A` with a reason.
 
+- Blueprint version: TODO (the release tag you copied, for example `v1.0.0`)
+
 ## Product map
 
 - Product and user goal: TODO
