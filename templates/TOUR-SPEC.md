@@ -27,6 +27,8 @@ isolation_mode: TODO # private-sandbox (preferred) / shared-demo-estate, with re
 shared_estate: TODO / N/A # who else sees demo data, totals it changes, purge control and its guard
 isolation_boundary: TODO # exact namespace/identifier and where enforced
 context_before_tour: TODO # what is saved/restored
+context_storage: TODO # page memory (preferred) / persisted with a recovery marker; what boot does with a stale marker
+cross_tab: TODO # tab-scoped, or how other tabs learn about the demo context and show the banner
 reset_policy: TODO # disposable scope only; specify replay baseline
 external_effects_blocked:
   - TODO
@@ -91,6 +93,8 @@ shared_with_assistant: TODO / N/A # does an in-product agent reuse the engine an
 - What before/after snapshot proves the user's state is unchanged? TODO
 - How is exact-change undo scoped? TODO / N/A with reason
 - What cleanup runs on exit, unmount, and async failure? TODO
+- What happens on hard reload, crash and session expiry mid-tour? TODO
+- What does a second tab show while the tour runs? TODO
 - Which half-filled forms does the fallback close before a direct write? TODO
 
 ## Acceptance commands and evidence

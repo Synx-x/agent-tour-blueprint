@@ -5,6 +5,8 @@
 - [ ] Demo context is synthetic/disposable and has a distinct identifier.
 - [ ] Reset, writes, reads, and cleanup are scoped to that context at the data/domain boundary.
 - [ ] User's pre-tour context is saved and restored on finish, skip, failure, and unmount.
+- [ ] A hard reload, crash or expired session returns the user to their own context.
+- [ ] Other tabs never show demo data without the demo banner.
 - [ ] External effects (payments, messages, publishing, webhooks, real imports) are disabled/stubbed.
 - [ ] Tests compare the real user's before/after data snapshot and find no change.
 - [ ] Undo targets the exact tour-created change id.

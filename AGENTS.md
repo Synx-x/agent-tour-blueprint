@@ -30,6 +30,23 @@ Use a dedicated synthetic persona, test tenant, temporary database, browser prof
 
 Never reset or seed a real user profile. If active-profile state syncs across devices, do not store the tour context there unless the host provides a scoped, reversible session mechanism. Save the previous context and restore it on every exit path.
 
+#### Survive reload, crash and session expiry
+
+A hard reload, a browser crash or an expired session ends the tour without running any exit handler. The app must then come back in the user's own context, not the demo context.
+
+- Hold the active demo context in page memory. A reload then drops it, and the app renders the user's context again. The Abacus tour does this: the sandbox profile lives only in its in-memory tour store.
+- If the host must persist the demo context, for example in a server session, persist a recovery marker with it. The marker holds the demo context id, the previous context and a start time.
+- On boot, check for the marker. If a marker exists and no tour is running, restore the previous context and clear the marker. Then tell the user that the tour ended.
+- Treat an expired session the same way. After the user signs in again, the app opens in their own context.
+
+#### Keep other tabs out of the demo context
+
+A second tab can share the first tab's storage, such as `localStorage`, a shared cookie or a server-side "active profile". If the tour writes its context there, the second tab enters the demo context without a banner. The user then edits demo data and believes it is real.
+
+- Prefer tab-scoped state: page memory, `sessionStorage` or a tab-scoped session id.
+- If the context must sit in shared storage, tell the other tabs. Listen for the change, for example through the `storage` event or a `BroadcastChannel`. Show the demo banner in every tab that enters the demo context, or block its writes until the tour ends.
+- A tab must never write to the demo context without its banner. It must never write to the user's real data while it shows the banner.
+
 #### Pick an isolation mode
 
 Declare one mode in `TOUR-SPEC.md`.
@@ -127,7 +144,7 @@ For each write, read the resulting state back from the disposable context. If th
 
 ### 7. Restore and clean up on every exit
 
-On completion, skip, close, failure, route change, and unmount:
+On completion, skip, close, failure, route change, and unmount (section 2 covers reload, crash and session expiry):
 
 - stop pending tour work or make late results harmless;
 - remove overlays, spotlight, the drive cursor, and tour-only keyboard handlers;
@@ -170,6 +187,8 @@ Run each scenario with a fresh disposable user/profile and verify:
 11. A completed write step cannot run a second time, and no cursor or spotlight remains after the tour ends.
 12. Every write step passes against dirty state, not only a clean baseline. Run it twice in a row. Run it once with a conflicting open item that trips each refusal rule from section 1. A clean happy path hides every stuck step.
 13. In the shared demo estate mode, purge removes only demo-actor rows, and refuses when another actor holds rows in the demo scope.
+14. A hard reload during a step brings the app back in the user's own context. No demo banner or demo data remains.
+15. A second tab opened during the tour either shows the demo banner or stays in the user's context. It never shows demo data without the banner.
 
 If the product uses a dialog or toast library, confirm its completion callbacks fire before you chain steps on them. Prefer an explicit callback or a state postcondition.
 
