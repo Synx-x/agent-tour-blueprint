@@ -179,7 +179,9 @@ Use the host project's existing test stack. Unit tests alone do not prove the li
 - External-effect adapters are stubbed/disabled in tests.
 - Every drive script resolves: each target and row anchor exists, and each script's values match the direct write's input.
 - The engine raises its typed miss for an absent control, and the runner then takes the direct path.
-- If an assistant shares the engine, it cannot run a script that is not in the registry, and it cannot pass a raw target or step list.
+- An assistant that shares the engine runs registered scripts only. It cannot pass a raw target or step list.
+
+Run these contract checks in the host's CI on every change, not only when the tour is built. A tour breaks when someone renames an anchor, moves a control or adds a refusal rule elsewhere in the product. The CI gate then fails the change that broke the tour, before a user finds it. Keep the checks fast and browser-free, so the team keeps them in the required set. Run the live journey on a schedule or before each release.
 
 ### Integration and live journey
 

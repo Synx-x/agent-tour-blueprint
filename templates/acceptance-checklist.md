@@ -51,5 +51,6 @@
 - [ ] Replay returns to baseline; exit restores the previous context.
 - [ ] Timeout and missing-target paths are tested.
 - [ ] Relevant unit/integration/full host-repo gates run and results are recorded.
+- [ ] Tour contract checks run in CI on every change. The live journey runs on a schedule or before each release.
 - [ ] Handoff names tested commands, environment, gaps, and how to start/replay/exit.
 - [ ] No credentials, personal data, or production fixtures appear in public files/evidence.

@@ -38,6 +38,7 @@ failure_paths:
   - TODO
 validation_commands:
   - TODO # commands verified from host docs/scripts
+ci_gate: TODO # the CI job that runs the contract checks on every change; when the live journey runs
 known_limits:
   - TODO
 ```
