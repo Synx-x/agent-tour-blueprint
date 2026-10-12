@@ -2,6 +2,8 @@
 
 The receiving agent completes this document before coding. Replace every `TODO`; mark non-applicable fields `N/A` with a reason.
 
+- Blueprint version: TODO (the release tag you copied, for example `v1.0.0`)
+
 ## Product map
 
 - Product and user goal: TODO
@@ -14,6 +16,7 @@ The receiving agent completes this document before coding. Replace every `TODO`;
 - External integrations that can cause side effects: TODO
 - Existing test, browser automation, and run commands: TODO
 - Relevant accessibility/responsive conventions: TODO
+- Supported locales, translation layer and right-to-left support: TODO / N/A
 
 ## Tour contract
 
@@ -27,6 +30,8 @@ isolation_mode: TODO # private-sandbox (preferred) / shared-demo-estate, with re
 shared_estate: TODO / N/A # who else sees demo data, totals it changes, purge control and its guard
 isolation_boundary: TODO # exact namespace/identifier and where enforced
 context_before_tour: TODO # what is saved/restored
+context_storage: TODO # page memory (preferred) / persisted with a recovery marker; what boot does with a stale marker
+cross_tab: TODO # tab-scoped, or how other tabs learn about the demo context and show the banner
 reset_policy: TODO # disposable scope only; specify replay baseline
 external_effects_blocked:
   - TODO
@@ -36,6 +41,8 @@ failure_paths:
   - TODO
 validation_commands:
   - TODO # commands verified from host docs/scripts
+ci_gate: TODO # the CI job that runs the contract checks on every change; when the live journey runs
+telemetry: TODO / N/A # analytics sink, consent rule, events sent; never narration, values or record ids
 known_limits:
   - TODO
 ```
@@ -68,6 +75,7 @@ Answer these before you build any visible-UI action. See `AGENTS.md` section 6.
 
 ```yaml
 anchor_attribute: TODO # e.g. data-tour; one attribute for every driven control
+locales_tested: TODO / N/A # source locale, longest-string locale, any right-to-left locale
 row_attribute: TODO # e.g. data-row holding the entity id; how row actions are scoped
 duplicate_renders: TODO # screens where one anchor matches twice; how the visible copy is picked
 stage_hook: TODO # how the host brings a screen/panel forward for the engine
@@ -77,6 +85,7 @@ pace_ms: { move: TODO, settle: TODO, per_char: TODO, max_type: TODO, press: TODO
 reduced_motion: TODO # every step kept, every wait zero
 expected_path_by_viewport: TODO # per step: screen or direct at each supported viewport
 shared_with_assistant: TODO / N/A # does an in-product agent reuse the engine and scripts?
+assistant_registry: TODO / N/A # where scripts are registered by write name; which writes need user confirmation
 ```
 
 | Step ID | Drive steps (do, target, row, caption) | Fallback when a control is missing | Runs once? |
@@ -91,6 +100,8 @@ shared_with_assistant: TODO / N/A # does an in-product agent reuse the engine an
 - What before/after snapshot proves the user's state is unchanged? TODO
 - How is exact-change undo scoped? TODO / N/A with reason
 - What cleanup runs on exit, unmount, and async failure? TODO
+- What happens on hard reload, crash and session expiry mid-tour? TODO
+- What does a second tab show while the tour runs? TODO
 - Which half-filled forms does the fallback close before a direct write? TODO
 
 ## Acceptance commands and evidence

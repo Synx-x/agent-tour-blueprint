@@ -4,7 +4,7 @@ Give a coding agent this blueprint to add a guided product tour to an unfamiliar
 
 ## Use it
 
-1. Copy `AGENTS.md` and `templates/` into the target repository (or point your coding agent at this repository).
+1. Copy `AGENTS.md` and `templates/` from a [tagged release](https://github.com/Synx-x/agent-tour-blueprint/releases) into the target repository, or point your coding agent at that tag. Record the tag in the spec's `blueprint_version` field.
 2. Ask the agent: **“Implement a guided tour using the instructions in `AGENTS.md`. Start by mapping the app and completing `templates/TOUR-SPEC.md`; do not code until you prove the demo-data isolation boundary.”**
 3. Review the completed tour spec and safety boundary before approving write actions or live tests.
 4. Run the host project's tests and follow the agent's handoff report.
@@ -20,13 +20,18 @@ No runtime or framework dependency is required. The blueprint instructs the agen
 - A visible cursor that drives each "Show me" step on screen from data scripts, and a live check that fails a step the user never saw.
 - Undo scoped to the tour's own change, replay from baseline, and safe exit.
 - Unit/contract and live journey checks, including a before/after data-isolation assertion.
+- Recovery from reload, crash and session expiry, and no demo data in other tabs without the banner.
+- An in-product assistant limited to registered drive scripts.
+- Contract checks in CI, localization rules, a scenario schema and privacy-safe telemetry.
 
 ## Files
 
 - `AGENTS.md` — ordered implementation workflow, safety rules, architecture guidance, and acceptance gates for coding agents.
 - `templates/TOUR-SPEC.md` — host-specific discovery and design contract for the agent to complete before coding.
 - `templates/scenario.example.yaml` — stack-neutral example of scenario data and observable success checks.
+- `templates/scenario.schema.json` — JSON Schema (draft 2020-12) for scenario files. The example validates against it.
 - `templates/acceptance-checklist.md` — handoff checklist for review and live verification.
+- `CHANGELOG.md` — what each tagged release changed, and the versioning rules.
 
 ## Scope and origin
 

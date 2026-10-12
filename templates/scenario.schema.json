@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Synx-x/agent-tour-blueprint/templates/scenario.schema.json",
+  "title": "Tour scenario",
+  "description": "Shape check for one scenario file. Port it to the host's validator and extend it with host fields. Reference checks (targets, fixtures, step ids) stay in host contract tests.",
+  "type": "object",
+  "required": ["id", "steps"],
+  "anyOf": [{ "required": ["title"] }, { "required": ["title_key"] }],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "#/$defs/id" },
+    "title": { "type": "string", "minLength": 1 },
+    "title_key": { "type": "string", "minLength": 1 },
+    "audience": { "type": "string" },
+    "fixture_requirements": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "steps": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/step" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "nullableName": { "type": ["string", "null"], "minLength": 1 },
+    "step": {
+      "type": "object",
+      "required": ["id", "success_check", "timeout_seconds"],
+      "allOf": [
+        { "anyOf": [{ "required": ["title"] }, { "required": ["title_key"] }] },
+        { "anyOf": [{ "required": ["narration"] }, { "required": ["narration_key"] }] },
+        { "anyOf": [{ "required": ["recovery"] }, { "required": ["recovery_key"] }] }
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string", "minLength": 1 },
+        "title_key": { "type": "string", "minLength": 1 },
+        "narration": { "type": "string", "minLength": 1 },
+        "narration_key": { "type": "string", "minLength": 1 },
+        "destination": { "$ref": "#/$defs/nullableName" },
+        "target": { "$ref": "#/$defs/nullableName" },
+        "fallback_target": { "$ref": "#/$defs/nullableName" },
+        "action": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/action" }] },
+        "follow": { "type": "string", "minLength": 1 },
+        "needs_result_of": { "$ref": "#/$defs/id" },
+        "success_check": { "type": "string", "minLength": 1 },
+        "undo_change_id": { "type": "string", "minLength": 1 },
+        "timeout_seconds": { "type": "number", "exclusiveMinimum": 0, "maximum": 120 },
+        "recovery": { "type": "string", "minLength": 1 },
+        "recovery_key": { "type": "string", "minLength": 1 }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["kind", "operation"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["visible-ui", "direct"] },
+        "operation": { "type": "string", "minLength": 1 },
+        "drive": { "$ref": "#/$defs/drive" },
+        "fallback": { "type": "string", "minLength": 1 },
+        "once": { "type": "boolean" },
+        "self_heal": { "type": "string", "minLength": 1 }
+      },
+      "if": { "properties": { "kind": { "const": "visible-ui" } } },
+      "then": { "required": ["drive", "fallback"] }
+    },
+    "drive": {
+      "type": "object",
+      "required": ["stage", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "stage": { "type": "string", "minLength": 1 },
+        "steps": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/driveStep" } }
+      }
+    },
+    "driveStep": {
+      "type": "object",
+      "required": ["do", "target"],
+      "anyOf": [{ "required": ["caption"] }, { "required": ["caption_key"] }],
+      "additionalProperties": false,
+      "properties": {
+        "do": { "enum": ["click", "fill", "select"] },
+        "target": { "type": "string", "minLength": 1 },
+        "row": { "type": "string", "minLength": 1 },
+        "value": { "type": "string" },
+        "caption": { "type": "string", "minLength": 1 },
+        "caption_key": { "type": "string", "minLength": 1 }
+      },
+      "if": { "properties": { "do": { "enum": ["fill", "select"] } } },
+      "then": { "required": ["value"] }
+    }
+  }
+}

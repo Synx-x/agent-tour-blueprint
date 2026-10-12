@@ -5,6 +5,8 @@
 - [ ] Demo context is synthetic/disposable and has a distinct identifier.
 - [ ] Reset, writes, reads, and cleanup are scoped to that context at the data/domain boundary.
 - [ ] User's pre-tour context is saved and restored on finish, skip, failure, and unmount.
+- [ ] A hard reload, crash or expired session returns the user to their own context.
+- [ ] Other tabs never show demo data without the demo banner.
 - [ ] External effects (payments, messages, publishing, webhooks, real imports) are disabled/stubbed.
 - [ ] Tests compare the real user's before/after data snapshot and find no change.
 - [ ] Undo targets the exact tour-created change id.
@@ -18,6 +20,7 @@
 - [ ] Missing/offscreen targets clear highlights instead of leaving stale overlays.
 - [ ] Failed actions show a plain, truthful message with retry/skip/exit.
 - [ ] Keyboard, focus, reduced motion, contrast, and small-screen behavior are checked.
+- [ ] A localized product anchors on tour attributes, keeps narration and captions as translation keys, and passes in the tested locales.
 
 ## Step resilience
 
@@ -40,13 +43,22 @@
 - [ ] A missing control raises the typed miss. The fallback closes half-filled forms, then writes directly.
 - [ ] The live check fails a step when no cursor appears, and it records `screen` or `direct` per step.
 - [ ] A completed write step cannot run twice. No cursor or ring remains after exit.
+- [ ] An assistant that shares the engine runs registered scripts only, built from a validated write plan.
+
+## Telemetry
+
+- [ ] Tour events go through the host's analytics and respect its consent settings, or the spec marks telemetry N/A.
+- [ ] Events carry stable ids and enums only. No narration, fixture values, typed values, record ids or free text.
+- [ ] The `direct` path rate per step and viewport is visible to the team.
 
 ## Verification and handoff
 
+- [ ] Every scenario file passes the scenario schema (or its host port).
 - [ ] Scenario fixture requirements and semantic anchors validate before use.
 - [ ] One complete real UI journey passes in a fresh disposable context.
 - [ ] Replay returns to baseline; exit restores the previous context.
 - [ ] Timeout and missing-target paths are tested.
 - [ ] Relevant unit/integration/full host-repo gates run and results are recorded.
-- [ ] Handoff names tested commands, environment, gaps, and how to start/replay/exit.
+- [ ] Tour contract checks run in CI on every change. The live journey runs on a schedule or before each release.
+- [ ] Handoff names the blueprint version, tested commands, environment, gaps, and how to start/replay/exit.
 - [ ] No credentials, personal data, or production fixtures appear in public files/evidence.

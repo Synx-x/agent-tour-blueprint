@@ -1,4 +1,5 @@
 # Illustrative shape only. Replace every field with validated host-system data.
+# Validates against scenario.schema.json in this directory.
 id: first-safe-workflow
 title: Complete a sample task
 audience: first-time user
@@ -8,6 +9,7 @@ steps:
   - id: welcome
     title: Start in the demo workspace
     narration: This tour uses a disposable demo workspace, not your account data.
+    # A localized product uses narration_key (and title_key, caption_key) instead of literal text.
     destination: null
     target: null
     action: null
