@@ -47,6 +47,7 @@
 
 ## Verification and handoff
 
+- [ ] Every scenario file passes the scenario schema (or its host port).
 - [ ] Scenario fixture requirements and semantic anchors validate before use.
 - [ ] One complete real UI journey passes in a fresh disposable context.
 - [ ] Replay returns to baseline; exit restores the previous context.

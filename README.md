@@ -26,6 +26,7 @@ No runtime or framework dependency is required. The blueprint instructs the agen
 - `AGENTS.md` — ordered implementation workflow, safety rules, architecture guidance, and acceptance gates for coding agents.
 - `templates/TOUR-SPEC.md` — host-specific discovery and design contract for the agent to complete before coding.
 - `templates/scenario.example.yaml` — stack-neutral example of scenario data and observable success checks.
+- `templates/scenario.schema.json` — JSON Schema (draft 2020-12) for scenario files. The example validates against it.
 - `templates/acceptance-checklist.md` — handoff checklist for review and live verification.
 
 ## Scope and origin

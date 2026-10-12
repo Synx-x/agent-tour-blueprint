@@ -65,6 +65,8 @@ Start with one representative, useful journey. Add more scenarios only after the
 
 Each step needs a stable id, short title, accurate narration, optional destination and semantic target, optional named action, observable success condition, and recovery guidance. Validate all fixture requirements, targets, destinations, action names, and success checks before presenting the tour.
 
+Check each scenario file's shape against `templates/scenario.schema.json` first. Port the schema to the host's own validator and extend it with host fields. The schema catches a misspelled field, a `fill` with no value and a visible-UI action with no fallback. Reference checks, such as whether a target exists, stay in the host's contract tests.
+
 Make each write step find or create the state it needs. Do not assume "a run is open" or "a batch exists". If a refusal rule blocks the write, the step clears the blocker inside the demo scope first, then writes. Example: a step that generates a run first retires a blocking open run, then takes the next free period. This is mandatory in the shared demo estate mode. In a private sandbox it still protects Back and retry.
 
 A step can depend on an earlier step's result, such as the change id that an undo step reverses. Do not hide or disable the later step when that result is missing. Explain what is missing and send the user back to the step that creates it.

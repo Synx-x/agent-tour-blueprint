@@ -1,4 +1,5 @@
 # Illustrative shape only. Replace every field with validated host-system data.
+# Validates against scenario.schema.json in this directory.
 id: first-safe-workflow
 title: Complete a sample task
 audience: first-time user
