@@ -14,6 +14,7 @@ The receiving agent completes this document before coding. Replace every `TODO`;
 - External integrations that can cause side effects: TODO
 - Existing test, browser automation, and run commands: TODO
 - Relevant accessibility/responsive conventions: TODO
+- Supported locales, translation layer and right-to-left support: TODO / N/A
 
 ## Tour contract
 
@@ -71,6 +72,7 @@ Answer these before you build any visible-UI action. See `AGENTS.md` section 6.
 
 ```yaml
 anchor_attribute: TODO # e.g. data-tour; one attribute for every driven control
+locales_tested: TODO / N/A # source locale, longest-string locale, any right-to-left locale
 row_attribute: TODO # e.g. data-row holding the entity id; how row actions are scoped
 duplicate_renders: TODO # screens where one anchor matches twice; how the visible copy is picked
 stage_hook: TODO # how the host brings a screen/panel forward for the engine

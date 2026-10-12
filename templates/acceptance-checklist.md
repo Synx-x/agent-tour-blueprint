@@ -20,6 +20,7 @@
 - [ ] Missing/offscreen targets clear highlights instead of leaving stale overlays.
 - [ ] Failed actions show a plain, truthful message with retry/skip/exit.
 - [ ] Keyboard, focus, reduced motion, contrast, and small-screen behavior are checked.
+- [ ] A localized product anchors on tour attributes, keeps narration and captions as translation keys, and passes in the tested locales.
 
 ## Step resilience
 

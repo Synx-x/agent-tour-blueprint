@@ -96,7 +96,7 @@ Every wait/action must have a finite timeout. Prefer events, pending flags, or v
 - Add a discoverable entry point; add a persona/scenario picker only when workflows or audiences differ.
 - Keep a visible demo/sandbox banner and exit control while the tour is active.
 - Provide Back, Next, Skip/Exit, Replay/Restart, progress, and visible action results.
-- Navigate to real screens. Use stable semantic anchors (accessible names or explicit test/tour attributes), not generated CSS classes or positional selectors.
+- Navigate to real screens. Use stable semantic anchors (accessible names or explicit test/tour attributes), not generated CSS classes or positional selectors. A localized product uses tour attributes only (see below).
 - When one anchor matches more than one element, pick the copy the user can see. A screen can render a module twice, for example in a main view and in a tile over it. Hit-test the centre of each laid-out match and take the one on top. Never take the first match.
 - Scope row actions with a row attribute that holds the entity id, for example `[data-row="<id>"] [data-tour="activity.undo"]`. An unscoped target finds the wrong row.
 - Recompute spotlight targets after navigation/layout changes. Clear the previous spotlight when a target is missing, hidden, occluded, or offscreen. Never leave a stale ring.
@@ -105,6 +105,16 @@ Every wait/action must have a finite timeout. Prefer events, pending flags, or v
 - Give every overlay (spotlight, dim mask, cursor) `pointer-events: none` or the host equivalent. An overlay that takes pointer events blocks the real click and breaks the hit-test.
 - Respect keyboard navigation, focus management, Escape, contrast, reduced-motion preference, and touch targets. Return focus sensibly on close.
 - Keep narration concise and grounded in the selected fixture. Describe empty, zero, stale, or unavailable values accurately.
+
+#### Localize the tour with the product
+
+If the product ships in more than one locale, the tour must work in each one.
+
+- Anchor only on explicit tour attributes. Accessible names change per locale, so an anchor built on one breaks in every other locale.
+- Store narration, step titles and cursor captions as translation keys in the scenario, for example `narration_key`. Resolve them through the host's own translation layer.
+- Build typed values in the locale's format: dates, decimal separators and currency. A masked input rejects a value in the wrong format.
+- Fit the step card to the longest translation. Mirror the cursor caption and step card in right-to-left locales.
+- Run the live journey in at least two locales: the source locale and the one with the longest strings. Add a right-to-left locale if the product ships one.
 
 ### 6. Run actions through product behavior
 
