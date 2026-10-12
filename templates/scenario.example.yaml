@@ -39,6 +39,7 @@ steps:
     narration: This demo change is scoped to the disposable workspace and can be undone.
     destination: records
     target: tour.record.edit
+    fallback_target: tour.records.panel # always laid out; used after a short grace period
     action:
       kind: visible-ui
       operation: update-demo-field
@@ -52,6 +53,8 @@ steps:
       # Same validation, same postcondition. The runner records `screen` or `direct`.
       fallback: direct-update-demo-field
       once: true # disable Show me after success, re-offer only after a failure
+      self_heal: clear-blocking-open-edit # find or create the needed state inside the demo scope
+    follow: open-updated-record # take the user to the changed object
     success_check: demo-record-field-matches-example-value
     undo_change_id: capture-exact-tour-change-id
     timeout_seconds: 15
@@ -62,6 +65,7 @@ steps:
     narration: Undo only the change made in this tour.
     destination: activity
     target: tour.activity.undo-exact-change
+    needs_result_of: make-reversible-change # if missing, explain and point back; never hide the step
     action:
       kind: visible-ui
       operation: undo-captured-tour-change-id
