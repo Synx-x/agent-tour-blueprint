@@ -8,6 +8,7 @@
 - [ ] External effects (payments, messages, publishing, webhooks, real imports) are disabled/stubbed.
 - [ ] Tests compare the real user's before/after data snapshot and find no change.
 - [ ] Undo targets the exact tour-created change id.
+- [ ] Isolation mode is declared. A shared demo estate discloses its leak and ships a guarded purge.
 
 ## User experience
 
@@ -17,6 +18,14 @@
 - [ ] Missing/offscreen targets clear highlights instead of leaving stale overlays.
 - [ ] Failed actions show a plain, truthful message with retry/skip/exit.
 - [ ] Keyboard, focus, reduced motion, contrast, and small-screen behavior are checked.
+
+## Step resilience
+
+- [ ] Every domain refusal rule for a tour write is listed in the spec.
+- [ ] Every write step passes twice in a row and once against a conflicting open item.
+- [ ] Steps that need an earlier result explain what is missing and point back, instead of hiding.
+- [ ] Each targeted step has an always-visible fallback target, used only after a grace period.
+- [ ] After a step creates or regenerates an object, the tour opens it with filters aligned to the demo scope.
 
 ## Drive cursor
 

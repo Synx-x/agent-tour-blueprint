@@ -23,6 +23,8 @@ entry_points:
 audience:
   - TODO
 demo_data_source: TODO # synthetic fixture / disposable tenant / temporary copy
+isolation_mode: TODO # private-sandbox (preferred) / shared-demo-estate, with reason
+shared_estate: TODO / N/A # who else sees demo data, totals it changes, purge control and its guard
 isolation_boundary: TODO # exact namespace/identifier and where enforced
 context_before_tour: TODO # what is saved/restored
 reset_policy: TODO # disposable scope only; specify replay baseline
@@ -38,6 +40,14 @@ known_limits:
   - TODO
 ```
 
+## Domain refusal rules
+
+List every service guard that can refuse a tour write. Each one needs a self-healing step and a dirty-state test.
+
+| Write | Refusal rule (from service code) | How the step clears it inside the demo scope | Dirty-state test |
+|---|---|---|---|
+| TODO | TODO | TODO | TODO |
+
 ## Scenario inventory
 
 | Scenario ID | Audience | Fixture requirements | Safe writes? | Undo/recovery | Pass condition |
@@ -46,7 +56,7 @@ known_limits:
 
 ## Step design
 
-For each journey, list the steps with stable ids, narration, destination, semantic target, optional action, observable postcondition, timeout, and retry/skip/exit guidance. Keep fixture-specific text out of UI code.
+For each journey, list the steps with stable ids, narration, destination, semantic target, fallback target, optional action, observable postcondition, timeout, and retry/skip/exit guidance. Keep fixture-specific text out of UI code.
 
 | Step ID | Narration goal | Destination/target | Action | Postcondition | Timeout/recovery |
 |---|---|---|---|---|---|

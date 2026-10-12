@@ -17,6 +17,7 @@ Before coding:
 - Read the host's agent instructions, README, architecture notes for the relevant UI/data areas, and test/run scripts.
 - Locate the app shell, navigation, representative user workflows, persistence boundaries, profile/tenant switching, auth states, external integrations, and existing audit/undo behavior.
 - Find existing onboarding/tour code, stable semantic UI selectors, accessibility conventions, and browser/e2e tooling.
+- List the domain's refusal rules for every write the tour will make. Read the service guards, not only the UI. Typical rules: one open item per type, no duplicate period, no delete after acceptance, no finalize with nothing accepted. Each rule is a way for a tour step to get stuck.
 - Verify commands from repository scripts or docs; do not guess the framework or package manager.
 - Complete `templates/TOUR-SPEC.md` in the host repo (copy it there first if needed).
 - Report the proposed isolation boundary and external-effect controls before adding any write action.
@@ -29,6 +30,16 @@ Use a dedicated synthetic persona, test tenant, temporary database, browser prof
 
 Never reset or seed a real user profile. If active-profile state syncs across devices, do not store the tour context there unless the host provides a scoped, reversible session mechanism. Save the previous context and restore it on every exit path.
 
+#### Pick an isolation mode
+
+Declare one mode in `TOUR-SPEC.md`.
+
+- **Private sandbox (preferred).** Each run gets its own disposable context, and the tour wipes it to the fixture baseline at start. No other user can see it. Steps can assume the baseline.
+- **Shared demo estate.** The demo data lives in the real store under a fixed demo actor or tenant, and runs do not reset it. Use this mode only when the host cannot give a private sandbox. It has extra obligations:
+  - Make every write step self-healing (section 3).
+  - Ship a purge control from the first release. Put it on the demo banner and at the tour entry point. Purge only rows that the demo actor owns. Refuse to purge when another actor holds rows in the demo scope. Retire rows in one transaction, and close or void open dependents first. Document any history or audit rows that survive a purge.
+  - Disclose the leak. State in the spec and the handoff which other users can see the demo data and which totals or dashboards it changes.
+
 Disable or stub real payments, email/SMS, publishing, webhooks, imports, and other irreversible network operations. Use a test gateway or dry-run mode. Use synthetic/minimized fixtures; never copy production personal data, tokens, secrets, or credentials into the tour or its tests.
 
 ### 3. Design one end-to-end journey
@@ -36,6 +47,12 @@ Disable or stub real payments, email/SMS, publishing, webhooks, imports, and oth
 Start with one representative, useful journey. Add more scenarios only after the first passes end to end. A scenario should be data, not branching JSX/template logic. Use `templates/scenario.example.yaml` as a shape guide, then use the host language's normal format.
 
 Each step needs a stable id, short title, accurate narration, optional destination and semantic target, optional named action, observable success condition, and recovery guidance. Validate all fixture requirements, targets, destinations, action names, and success checks before presenting the tour.
+
+Make each write step find or create the state it needs. Do not assume "a run is open" or "a batch exists". If a refusal rule blocks the write, the step clears the blocker inside the demo scope first, then writes. Example: a step that generates a run first retires a blocking open run, then takes the next free period. This is mandatory in the shared demo estate mode. In a private sandbox it still protects Back and retry.
+
+A step can depend on an earlier step's result, such as the change id that an undo step reverses. Do not hide or disable the later step when that result is missing. Explain what is missing and send the user back to the step that creates it.
+
+After a step creates or regenerates an object, take the user to that object. Open its detail view, and align page filters (store, period, owner) to the demo scope so the new object is in the list.
 
 Prefer deterministic fixture-backed examples. If a step depends on AI, network access, or a quota, make that step optional or provide a clearly labeled non-AI fallback. Never fabricate a successful result.
 
@@ -66,6 +83,7 @@ Every wait/action must have a finite timeout. Prefer events, pending flags, or v
 - When one anchor matches more than one element, pick the copy the user can see. A screen can render a module twice, for example in a main view and in a tile over it. Hit-test the centre of each laid-out match and take the one on top. Never take the first match.
 - Scope row actions with a row attribute that holds the entity id, for example `[data-row="<id>"] [data-tour="activity.undo"]`. An unscoped target finds the wrong row.
 - Recompute spotlight targets after navigation/layout changes. Clear the previous spotlight when a target is missing, hidden, occluded, or offscreen. Never leave a stale ring.
+- Give every step with a target a fallback target that is always laid out, such as the step's section or panel. A step that regenerates an object removes the element its target pointed at. Wait a short grace period (start near 2.5 s) before the spotlight falls back. Without the wait, it rings the fallback before the real target renders.
 - While a step's action runs, the spotlight frames the control the cursor works on (section 6). After the action, it frames the step's section or the result.
 - Give every overlay (spotlight, dim mask, cursor) `pointer-events: none` or the host equivalent. An overlay that takes pointer events blocks the real click and breaks the hit-test.
 - Respect keyboard navigation, focus management, Escape, contrast, reduced-motion preference, and touch targets. Return focus sensibly on close.
@@ -150,12 +168,16 @@ Run each scenario with a fresh disposable user/profile and verify:
 9. No real external integration receives a request.
 10. A missing target and a timed-out action fail visibly and recoverably.
 11. A completed write step cannot run a second time, and no cursor or spotlight remains after the tour ends.
+12. Every write step passes against dirty state, not only a clean baseline. Run it twice in a row. Run it once with a conflicting open item that trips each refusal rule from section 1. A clean happy path hides every stuck step.
+13. In the shared demo estate mode, purge removes only demo-actor rows, and refuses when another actor holds rows in the demo scope.
+
+If the product uses a dialog or toast library, confirm its completion callbacks fire before you chain steps on them. Prefer an explicit callback or a state postcondition.
 
 Run focused tests first, then all required host-repo gates. Run at least one real-browser journey if the product has a browser UI. Check the smallest supported viewport and reduced-motion mode where relevant. Save concise evidence (commands, environment, scenarios, pass/fail counts, and limits) without credentials or personal data.
 
 ## Handoff report
 
-Report where the tour starts, the isolation boundary and external-effect controls, scenarios covered, which actions the cursor drove on screen versus through an adapter (per step and viewport), exact tests/results, known gaps, and how to start/replay/exit. Do not claim “fully verified” unless live journeys, data isolation, undo, replay, and exit were exercised.
+Report where the tour starts, the isolation mode and boundary, any shared-estate leak and the purge control, the external-effect controls, scenarios covered, which actions the cursor drove on screen versus through an adapter (per step and viewport), exact tests/results, known gaps, and how to start/replay/exit. Do not claim “fully verified” unless live journeys, data isolation, undo, replay, and exit were exercised.
 
 ## First instruction
 
