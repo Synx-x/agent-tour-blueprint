@@ -176,6 +176,22 @@ On completion, skip, close, failure, route change, and unmount (section 2 covers
 
 Test exit during preparation and while an action is pending. If cleanup or undo fails, state that plainly and give a safe next action. Never silently strand the app in the demo context.
 
+### 8. Measure the tour
+
+Tour events show where users drop off and where the UI drifts away from the drive scripts. Send them through the host's existing analytics and consent settings. If the host has no analytics, skip this section and record the counts in the test evidence instead.
+
+| Event | Fields |
+|---|---|
+| `tour_started` | scenario id, viewport class, locale |
+| `step_viewed` | scenario id, step id |
+| `step_completed` | step id, path (`screen` or `direct`), duration |
+| `step_failed` | step id, error kind (miss, timeout, refusal, postcondition) |
+| `tour_ended` | last step id, reason (finished, skipped, exited, failed, reload recovery) |
+
+Never send narration, fixture values, typed values, record ids or free text. Use stable ids and enums only.
+
+Watch the `direct` rate per step and viewport. A rise means a control moved or vanished under its drive script. Treat it as a defect in the tour, even when every postcondition still passes.
+
 ## Acceptance gates
 
 Use the host project's existing test stack. Unit tests alone do not prove the live tour works.

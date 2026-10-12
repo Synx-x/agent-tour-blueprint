@@ -40,6 +40,7 @@ failure_paths:
 validation_commands:
   - TODO # commands verified from host docs/scripts
 ci_gate: TODO # the CI job that runs the contract checks on every change; when the live journey runs
+telemetry: TODO / N/A # analytics sink, consent rule, events sent; never narration, values or record ids
 known_limits:
   - TODO
 ```

@@ -45,6 +45,12 @@
 - [ ] A completed write step cannot run twice. No cursor or ring remains after exit.
 - [ ] An assistant that shares the engine runs registered scripts only, built from a validated write plan.
 
+## Telemetry
+
+- [ ] Tour events go through the host's analytics and respect its consent settings, or the spec marks telemetry N/A.
+- [ ] Events carry stable ids and enums only. No narration, fixture values, typed values, record ids or free text.
+- [ ] The `direct` path rate per step and viewport is visible to the team.
+
 ## Verification and handoff
 
 - [ ] Every scenario file passes the scenario schema (or its host port).
